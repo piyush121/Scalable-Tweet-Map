@@ -8,3 +8,6 @@
 
 -NodeJS
 
+<b>System Design</b> :
+
+![alt tag](http://i.imgur.com/ouIDUJT.png)
