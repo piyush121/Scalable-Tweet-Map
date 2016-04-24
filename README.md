@@ -2,7 +2,7 @@
 
 -ElasticBeanstalk environment
 
--Aamazon SQS, SNS seriveces.
+-Aamazon SQS, SNS serivces.
 
 -Alchemy API for sentiment Analysis.
 
