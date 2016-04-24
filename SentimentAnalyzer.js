@@ -1,8 +1,9 @@
 var http = require("http");
 var AWS = require('aws-sdk');
+var options = require('./config.js'); // very important to keep the keys safe and secure.
 AWS.config.update({region:'us-west-2'});
-var AWSaccessKey = "AKIAJMVGB5NWRQIA4ZUA";
-var secretAccessKey = "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";
+var AWSaccessKey = options.storageConfig.AWSAccessKey;
+var secretAccessKey = options.storageConfig.AWSSecretAccessKey;
 
 var creds = new AWS.Credentials({
 	accessKeyId: AWSaccessKey, secretAccessKey: secretAccessKey
@@ -13,7 +14,7 @@ var sqs = new AWS.SQS({apiVersion: '2012-11-05', credentials : creds});
 var watson = require('watson-developer-cloud');
 
 var alchemy_language = watson.alchemy_language({
-	api_key: '52f23ae613160664ff04062533c510fd6fd304ee'
+	api_key: options.storageConfig.AlchemyKey
 });
 
 var recParams = {

@@ -1,8 +1,9 @@
 var AWS = require('aws-sdk');
-AWS.config.update({region:'us-west-2'});
-var AWSaccessKey = "AKIAJMVGB5NWRQIA4ZUA";
-var secretAccessKey = "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";
 var Twitter = require('twitter');
+var options = require('./config.js');
+AWS.config.update({region:'us-west-2'});
+var AWSaccessKey = options.storageConfig.AWSAccessKey;
+var secretAccessKey = options.storageConfig.AWSSecretAccessKey;
 
 var creds = new AWS.Credentials({
 	accessKeyId: AWSaccessKey, secretAccessKey: secretAccessKey
@@ -24,10 +25,10 @@ var recParams = {
 };
 
 var client = new Twitter({
-	consumer_key: 'uiEauWJk6N2Hzkx5lBjS5X8JV',
-	consumer_secret: 'UhO7GTiqWeHrlVI1KUzrRjYAcMEfzxKJBcqaBDj5mOqbKWZLEt',
-	access_token_key: '39964732-gXHxcM6jtHNWDRxZUJqknAlDlAfqYwpie4CzWLDzx',
-	access_token_secret: 'snrqfR6sNEr6pG6FWqcqEsOpdrPtBH8zlkKhYV41Ke3Az'
+	consumer_key: options.storageConfig.TwitterConsumer_key,
+  consumer_secret: options.storageConfig.TwitterConsumer_secret,
+  access_token_key: options.storageConfig.TwitterAccess_token_key,
+  access_token_secret: options.storageConfigTwitterAccess_token_secret.
 });
  //Pushing tweets into Amazon SQS.
  console.log("Pushing tweets to Amazon SQS now...")
@@ -58,8 +59,8 @@ var client = new Twitter({
 			if (err) console.log(err, err.stack); // an error occurred
 			else    { console.log("Pushed to SQS\n");  
 
-  }
-});
+    }
+  });
 
   	}
   });
