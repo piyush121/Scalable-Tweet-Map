@@ -1,0 +1,20 @@
+{
+  "name": "scalable-tweetmap",
+  "version": "1.0.0",
+  "description": "Javascript package to push real time tweets into Piyush's elastic search domain.",
+  "main": "tweetmap.js",
+  "dependencies": {
+    "request": "^2.70.0",
+    "twitter": "^1.2.5",
+    "forever": "^0.15.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node tweetmap.js"
+  },
+  "keywords": [
+    "tweetmap"
+  ],
+  "author": "Piyush Chaudhary",
+  "license": "ISC"
+}
