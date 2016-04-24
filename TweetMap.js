@@ -6,10 +6,10 @@ var path = require("path");
 var Twitter = require('twitter');
  
 var client = new Twitter({
-  consumer_key: 'uiEauWJk6N2Hzkx5lBjS5X8JV',
-  consumer_secret: 'UhO7GTiqWeHrlVI1KUzrRjYAcMEfzxKJBcqaBDj5mOqbKWZLEt',
-  access_token_key: '39964732-gXHxcM6jtHNWDRxZUJqknAlDlAfqYwpie4CzWLDzx',
-  access_token_secret: 'snrqfR6sNEr6pG6FWqcqEsOpdrPtBH8zlkKhYV41Ke3Az'
+  consumer_key: '',
+  consumer_secret: '',
+  access_token_key: '',
+  access_token_secret: ''
 });
  //Pushing tweets into elastic search.
 console.log("Pushing tweets to elastic search now...")
