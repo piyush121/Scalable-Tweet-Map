@@ -1,7 +1,7 @@
 var AWS = require('aws-sdk');
 AWS.config.update({region:'us-west-2'});
-var accessKey = "AKIAJMVGB5NWRQIA4ZUA";
-var secretAccessKey = "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";
+var accessKey = "";
+var secretAccessKey = "";
 var Twitter = require('twitter');
 
 var creds = new AWS.Credentials({
@@ -26,10 +26,10 @@ var recParams = {
 
 
 var client = new Twitter({
-	consumer_key: 'uiEauWJk6N2Hzkx5lBjS5X8JV',
-	consumer_secret: 'UhO7GTiqWeHrlVI1KUzrRjYAcMEfzxKJBcqaBDj5mOqbKWZLEt',
-	access_token_key: '39964732-gXHxcM6jtHNWDRxZUJqknAlDlAfqYwpie4CzWLDzx',
-	access_token_secret: 'snrqfR6sNEr6pG6FWqcqEsOpdrPtBH8zlkKhYV41Ke3Az'
+	consumer_key: '',
+	consumer_secret: '',
+	access_token_key: '',
+	access_token_secret: ''
 });
  //Pushing tweets into Amazon SQS.
  console.log("Pushing tweets to Amazon SQS now...")
