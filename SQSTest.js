@@ -1,11 +1,11 @@
 var AWS = require('aws-sdk');
 AWS.config.update({region:'us-west-2'});
-var accessKey = "AKIAJMVGB5NWRQIA4ZUA";
+var AWSaccessKey = "AKIAJMVGB5NWRQIA4ZUA";
 var secretAccessKey = "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";
 var Twitter = require('twitter');
 
 var creds = new AWS.Credentials({
-	accessKeyId: accessKey, secretAccessKey: secretAccessKey
+	accessKeyId: AWSaccessKey, secretAccessKey: secretAccessKey
 });
 
 var sqs = new AWS.SQS({apiVersion: '2012-11-05', credentials : creds});
@@ -22,8 +22,6 @@ var recParams = {
 	VisibilityTimeout: 10,
 	WaitTimeSeconds: 0
 };
-
-
 
 var client = new Twitter({
 	consumer_key: 'uiEauWJk6N2Hzkx5lBjS5X8JV',
