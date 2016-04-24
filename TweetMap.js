@@ -2,14 +2,14 @@ var http = require("http");
 var fs = require("fs");
 var request = require("request");
 var path = require("path");
-
+var options = require('./config.js');
 var Twitter = require('twitter');
  
 var client = new Twitter({
-  consumer_key: 'uiEauWJk6N2Hzkx5lBjS5X8JV',
-  consumer_secret: 'UhO7GTiqWeHrlVI1KUzrRjYAcMEfzxKJBcqaBDj5mOqbKWZLEt',
-  access_token_key: '39964732-gXHxcM6jtHNWDRxZUJqknAlDlAfqYwpie4CzWLDzx',
-  access_token_secret: 'snrqfR6sNEr6pG6FWqcqEsOpdrPtBH8zlkKhYV41Ke3Az'
+  consumer_key: options.storageConfig.TwitterConsumer_key,
+  consumer_secret: options.storageConfig.TwitterConsumer_secret,
+  access_token_key: options.storageConfig.TwitterAccess_token_key,
+  access_token_secret: options.storageConfigTwitterAccess_token_secret.
 });
  //Pushing tweets into elastic search.
 console.log("Pushing tweets to elastic search now...")
