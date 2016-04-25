@@ -53,16 +53,15 @@ var recParams = {
 							process.nextTick(loop);
 						}
 						else {
-							var sentiment = JSON.parse(JSON.stringify(response)).docSentiment
-							var message = `{username: ${fetchedText.username}, text: ${fetchedText.text}, location: ${JSON.stringify(fetchedText.location)},sentiment: ${JSON.stringify(sentiment)}`;
+							var sentiment = JSON.parse(JSON.stringify(response)).docSentiment;
+							var message = {"default":`{"Message fro Piyush"}`, "http":`{"username": "${fetchedText.username}", "text": "${fetchedText.text}", "location": ${JSON.stringify(fetchedText.location)}, "sentiment": ${JSON.stringify(sentiment)}}`};
 							var SNSParams = {
-								Message: message, /* required */
-								MessageStructure: 'raw',
+								Message: JSON.stringify(message), /* required */
+								MessageStructure: 'json',
 								Subject: 'Processed Tweet',
-								TopicArn: 'arn:aws:sns:us-west-2:733784221245:PrcessedTweet'
-							};
+								TopicArn: 'arn:aws:sns:us-west-2:733784221245:PrcessedTweet'};
 							sns.publish(SNSParams, function(err, data) {
-								if (err) console.log("err, err.stack"); // an error occurred
+								if (err) console.log(err, err.stack); // an error occurred
 								else     {
 							    	console.log(data);           // successful response
 							    	console.log("SNS Params: "+SNSParams.toString());
