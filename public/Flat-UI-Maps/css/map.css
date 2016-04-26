@@ -1,0 +1,36 @@
+ul {
+    list-style-type: none;
+}
+
+#sidebar {
+    width: 36%;
+    position: fixed;
+    height: 100%;
+}
+
+#sidebar header {
+    text-align: center;
+}
+
+#sidebar header h3{
+    font-size: 36px;
+}
+
+#sidebar > .sidebar-options {
+    margin-top: 25px;
+}
+
+.dropdown-menu {
+    height: 250px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+#map {
+    height: 400px;
+    width: 64%;
+    float: right;
+}
+#map img {
+    max-width: none;
+}
