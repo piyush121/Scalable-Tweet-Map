@@ -6,11 +6,12 @@ var client = new elasticsearch.Client({
 hits = '';
 client.search({
 	q: 'life',
-	size: 100000
+	size: 2
 }).then(function (body) {
 	var hits = body.hits.hits;
-	//console.log("hits: "+(hits));
+	console.log("hits: "+(hits));
 	for( i =0; i < hits.length; i++)
+		
 		console.log(i+": "+(hits[i]._source.location.coordinates)+"|| Sentiment: "+ (hits[i]._source.sentiment.type));
 
 }, function (error) {

@@ -29,7 +29,7 @@ var recParams = {
 	],
 	/* more items */
 	VisibilityTimeout: 120,
-	WaitTimeSeconds: 0
+	WaitTimeSeconds: 10
 };
 
 
@@ -54,7 +54,7 @@ var recParams = {
 						}
 						else {
 							var sentiment = JSON.parse(JSON.stringify(response)).docSentiment;
-							var message = {"default":`{"Message fro Piyush"}`, "http":`{"username": "${fetchedText.username}", "text": "${fetchedText.text}", "location": ${JSON.stringify(fetchedText.location)}, "sentiment": ${JSON.stringify(sentiment)}}`};
+							var message = {"default":`{"Message from Piyush"}`, "http":`{"username": "${fetchedText.username}", "text": "${fetchedText.text}", "location": ${JSON.stringify(fetchedText.location)}, "sentiment": ${JSON.stringify(sentiment)}}`};
 							var SNSParams = {
 								Message: JSON.stringify(message), /* required */
 								MessageStructure: 'json',
@@ -64,7 +64,7 @@ var recParams = {
 								if (err) console.log(err, err.stack); // an error occurred
 								else     {
 							    	console.log(data);           // successful response
-							    	console.log("SNS Params: "+SNSParams.toString());
+							    	console.log("SNS Params: "+SNSParams.Message);
 							    	process.nextTick(loop);
 
 							    }
