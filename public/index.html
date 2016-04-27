@@ -31,7 +31,7 @@
 
         <ul class="sidebar-options">
             <li>
-                <h5>Trending HashTags</h5>
+                <h4><b><i>Trending  HashTags</i></b></h4>
                 
                 <select id="dropdown" onChange = "myFunction(value)">
                     <option  >---select---</option>
@@ -46,9 +46,10 @@
                 </select>
                 
             </li>
+			<h2><b> Total Hits: <span id ="count" style = "color: red">  0 </h2> </span></b></h2>
             
         </ul>
-        
+		
     </aside>
     <div id="map">
       
@@ -65,8 +66,10 @@
        var map = new google.maps.Map( document.getElementById( 'map' ), {
         zoom: 5,
         center: new google.maps.LatLng(40.7128, -74.0059),
-        mapTypeId: google.maps.MapTypeId.ROADMAP
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+		minZoom: 1
     });  
+	
        (function( $, google ) {
         
           
@@ -155,38 +158,55 @@ function myFunction(value) {
         data = JSON.parse(data);
 			//alert(data[0]._source.location.coordinates);
 			console.log(data.length);
+			var infowindow = new google.maps.InfoWindow();
+			var contentString = '';
+			document.getElementById("count").innerHTML = data.length;
+
 			for( i =0; i < data.length; i++) {
              try{
-                 var latLng = new google.maps.LatLng(data[i]._source.location.coordinates[0],data[i]._source.location.coordinates[1]); 
-                 
+                var latLng = new google.maps.LatLng(data[i]._source.location.coordinates[0],data[i]._source.location.coordinates[1]); 
+				
+                contentString = "<b>Username:</b> "+data[i]._source.username+"<br><b>Tweet: </b>"+data[i]._source.text+"<br><b>Sentiment Score: </b>"+(data[i]._source.sentiment.score*100).toFixed(2)+"% <i>"+data[i]._source.sentiment.type+"</i>";
+				
 			// Creating a marker and putting it on the map
-			var marker = new google.maps.Marker({
-                position: latLng,
-                map: map,
-                title: data[i]._source.sentiment.type
-            });
-			marker.setAnimation(google.maps.Animation.DROP);
-			markers.push(marker);
+				var marker = new google.maps.Marker({
+					position: latLng,
+					map: map,
+					clickable: true,
+					content: contentString,
+					title: "Location: "+JSON.stringify(data[i]._source.location.coordinates)
+				});
+				google.maps.event.addListener(marker, 'click', (function (marker, i) {
+					return function () {
+						infowindow.setContent(marker.content);
+						infowindow.open(map, marker);
+					}
+				})(marker, i));
+				
+				marker.setAnimation(google.maps.Animation.DROP);
+				markers.push(marker);
+			
 			if(data[i]._source.sentiment.type == "positive") {
              marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
-         }
-         else if(data[i]._source.sentiment.type == "neutral") {
-             marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
-         }
-         else if(data[i]._source.sentiment.type == "negative") {
-             marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
-         }
-     }
+			 }
+			 else if(data[i]._source.sentiment.type == "neutral") {
+				 marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
+			 }
+			 else if(data[i]._source.sentiment.type == "negative") {
+				 marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+			 }
+		 }
      catch(e) {
          console.log("Syntax Error: "+e);
      }
  }
-
+ 
  
 }
 });
 
 }
+
 function setMapOnAll(map) {
     for (var i = 0; i < markers.length; i++) {
       markers[i].setMap(map);
