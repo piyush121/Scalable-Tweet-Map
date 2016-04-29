@@ -22,6 +22,98 @@
       <![endif]-->
   </head>
   <body>
+  <script>
+  // This is called with the results from from FB.getLoginStatus().
+  
+  function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+    // The response object is returned with a status field that lets the
+    // app know the current login status of the person.
+    // Full docs on the response object can be found in the documentation
+    // for FB.getLoginStatus().
+    if (response.status === 'connected') {
+      // Logged into your app and Facebook.
+      testAPI();
+    } else if (response.status === 'not_authorized') {
+      // The person is logged into Facebook, but not your app.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this app.';
+    } else {
+      // The person is not logged into Facebook, so we're not sure if
+      // they are logged into this app or not.
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into Facebook.';
+    }
+  }
+
+  // This function is called when someone finishes with the Login
+  // Button.  See the onlogin handler attached to it in the sample
+  // code below.
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '534752083376519',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.5' // use graph api version 2.5
+  });
+
+  // Now that we've initialized the JavaScript SDK, we call 
+  // FB.getLoginStatus().  This function gets the state of the
+  // person visiting this page and can return one of three states to
+  // the callback you provide.  They can be:
+  //
+  // 1. Logged into your app ('connected')
+  // 2. Logged into Facebook, but not your app ('not_authorized')
+  // 3. Not logged into Facebook and can't tell if they are logged into
+  //    your app or not.
+  //
+  // These three cases are handled in the callback function.
+
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+
+  };
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';
+    });
+  }
+</script>
+
+<!--
+  Below we include the Login Button social plugin. This button uses
+  the JavaScript SDK to present a graphical Login button that triggers
+  the FB.login() function when clicked.
+-->
+
+
+
+<div id="status">
+</div>
     <aside id="sidebar" class="wet-asphalt">
         <header>
             <h3 class="turquoise-text">Scalable TweetMap</h3>
@@ -46,16 +138,27 @@
                 </select>
                 
             </li>
-			<h2><b> Total Hits: <span id ="count" style = "color: red">  0 </h2> </span></b></h2>
-            
+			<h2><b> Total Hits: <span id ="count" style = "color: red">  0 </h2> </span></b></h2></br>
+			<p> Please Login to see live tweets.</p>
+            <div class="fb-login-button" data-max-rows="1" data-size="xlarge" data-show-faces="false" data-auto-logout-link="true"></div>
+
         </ul>
-		
+
     </aside>
     <div id="map">
       
     </div>
     <!-- /#map -->
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.3.6.min.js"></script>
+	<script type="text/javascript">
+	  // See the Configuring section to configure credentials in the SDK
+	  // Configure your region
+	  AWS.config.region = 'us-west-2';
+	  var creds = new AWS.Credentials({
+	accessKeyId: "", secretAccessKey: ""
+});
 
+	</script>
 
     <!-- Load JS here for greater good =============================-->
     <script src="js/jquery-1.8.3.min.js"></script>
@@ -148,6 +251,7 @@
 
 })( jQuery, google );
 var markers = [];
+
 function myFunction(value) {
 	setMapOnAll(null);
     
@@ -161,9 +265,10 @@ function myFunction(value) {
 			var infowindow = new google.maps.InfoWindow();
 			var contentString = '';
 			document.getElementById("count").innerHTML = data.length;
-
+		
 			for( i =0; i < data.length; i++) {
              try{
+				//console.log(data[i]._source.location.coordinates);
                 var latLng = new google.maps.LatLng(data[i]._source.location.coordinates[0],data[i]._source.location.coordinates[1]); 
 				
                 contentString = "<b>Username:</b> "+data[i]._source.username+"<br><b>Tweet: </b>"+data[i]._source.text+"<br><b>Sentiment Score: </b>"+(data[i]._source.sentiment.score*100).toFixed(2)+"% <i>"+data[i]._source.sentiment.type+"</i>";
@@ -183,7 +288,7 @@ function myFunction(value) {
 					}
 				})(marker, i));
 				
-				marker.setAnimation(google.maps.Animation.DROP);
+				//marker.setAnimation(google.maps.Animation.DROP);
 				markers.push(marker);
 			
 			if(data[i]._source.sentiment.type == "positive") {
@@ -204,6 +309,14 @@ function myFunction(value) {
  
 }
 });
+FB.getLoginStatus(function(response) {
+  if (response.status === 'connected') {// logged in
+    setInterval(showTweets,1000);
+    console.log('You are now logged in to Facebook.');
+  } else {
+    alert('Please Login to see LIVE tweets');
+  }
+});
 
 }
 
@@ -213,6 +326,72 @@ function setMapOnAll(map) {
   }
 }
 
+
+
+var showTweets = function () { //trying to fetch tweets from sqs.
+var recParams = {
+	QueueUrl: 'https://sqs.us-west-2.amazonaws.com/733784221245/TweetsFetched', /* required */
+	MaxNumberOfMessages: 1,
+	AttributeNames: [
+	"All"
+	],
+	/* more items */
+	VisibilityTimeout: 120,
+	WaitTimeSeconds: 10
+};
+var accessToken ='';
+
+FB.getLoginStatus(function(response) {
+  if (response.status === 'connected') {
+    accessToken = response.authResponse.accessToken;
+  } 
+AWS.config.region = 'us-east-1'; 
+AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'us-east-1:0d874084-163a-4689-8c5f-1458b37fbaf2',
+      Logins: {
+        'graph.facebook.com': accessToken
+      }
+    });
+	
+		var sqs = new AWS.SQS();
+
+		sqs.receiveMessage(recParams, function(err, data) {
+			if (err) console.log(err, err.stack); // an error occurred
+			else    { 
+			try{
+				fetchedText = JSON.parse(data.Messages[0].Body);
+				fetchedText = JSON.parse(JSON.parse(fetchedText.Message).http);
+				fetchedText = JSON.parse(JSON.stringify(fetchedText.location));
+				console.log("Fetched: "+fetchedText.coordinates);
+				var latLng = new google.maps.LatLng(fetchedText.coordinates[0],fetchedText.coordinates[1]); 
+				 
+				// Creating a marker and putting it on the map
+				var marker = new google.maps.Marker({
+					position: latLng,
+					map: map,
+					clickable: true,
+					content: "In progress",
+					title: "Location: "+fetchedText.coordinates
+				});
+				google.maps.event.addListener(marker, 'click', (function (marker) {
+					return function () {
+						infowindow.setContent(marker.content);
+						infowindow.open(map, marker);
+					}
+				})(marker));
+				
+				//marker.setAnimation(google.maps.Animation.DROP);
+				markers.push(marker);
+				marker.setAnimation(google.maps.Animation.DROP);
+				marker.setMap(map);
+				}
+				catch(e){
+					console.log(e);
+					};
+				}
+				});
+				});
+};
 </script>
 </body>
 </html>
