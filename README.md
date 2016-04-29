@@ -3,7 +3,7 @@ Enhanced version of the previous Tweet Map. It uses Amazon's SQS and SNS feature
 
 "# Scalable-Tweet-Map"
 
-Properties: 
+Technologies used : 
 
 -Amazon AWS ElasticBeanstalk environment
 
@@ -11,12 +11,16 @@ Properties:
 
 -Alchemy API for sentiment Analysis.
 
--NodeJS
+-NodeJS for backend.
 
 System Design :
 
 ![alt tag](http://i.imgur.com/ouIDUJT.png)
 
-<b>First Prototype running on :
+<b>Final prototype running on :
 
 http://ec2-52-37-143-159.us-west-2.compute.amazonaws.com:3000/
+
+Now it can now fetch live tweets in runtime by authenticating user from Facebook.
+
+Few minor issues remain but I hope for most parts it works fine.
