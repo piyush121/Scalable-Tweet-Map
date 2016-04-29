@@ -17,10 +17,10 @@ System Design :
 
 ![alt tag](http://i.imgur.com/ouIDUJT.png)
 
-<b>Final prototype running on :
+<b>Final version running on :
 
 http://ec2-52-37-143-159.us-west-2.compute.amazonaws.com:3000/
 
-Now it can now fetch live tweets in runtime by authenticating user from Facebook.
+Now it can fetch live tweets in runtime by authenticating user from Facebook.
 
 Few minor issues remain but I hope for most parts it works fine.
