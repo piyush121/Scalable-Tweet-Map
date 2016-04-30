@@ -1,8 +1,8 @@
 {
   "name": "scalable-tweetmap",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Javascript package to push real time tweets into Piyush's elastic search domain.",
-  "main": "tweetmap.js",
+  "main": "TweetFetcher.js",
   "dependencies": {
     "request": "^2.70.0",
     "twitter": "^1.2.5",
@@ -17,5 +17,13 @@
     "tweetmap"
   ],
   "author": "Piyush Chaudhary",
-  "license": "ISC"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piyush121/Scalable-Tweet-Map.git"
+  },
+  "bugs": {
+    "url": "https://github.com/piyush121/Scalable-Tweet-Map/issues"
+  },
+  "homepage": "https://github.com/piyush121/Scalable-Tweet-Map#readme"
 }
