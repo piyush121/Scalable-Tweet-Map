@@ -28,16 +28,18 @@ var recParams = {
 	"All"
 	],
 	/* more items */
-	VisibilityTimeout: 120,
-	WaitTimeSeconds: 10
+	VisibilityTimeout: 43200,
+	WaitTimeSeconds: 20
 };
 
 
 (function loop() {
 	console.log("trying to fetch tweets from SQS queue...\n");
 	sqs.receiveMessage(recParams, function(err, data) {
-			if (err) console.log(err, err.stack); // an error occurred
-			else    { 
+			if (err) {
+				console.log(err);
+				}// an error occurred
+			else {
 				fetchedText = JSON.parse(data.Messages[0].Body);
 				console.log("Fetched: ",JSON.parse(data.Messages[0].Body))
 
@@ -49,7 +51,7 @@ var recParams = {
 					console.log("Doing Sentimental Analysis now...\n");
 					alchemy_language.sentiment(alchemyParams, function (err, response) {
 						if (err) {
-							console.log("Alchemy Error Occured...Moving on to next tweet\n"); // an error occurred
+							console.log("Alchemy Error Occured...Moving on to next tweet\n"+JSON.stringify(err)); // an error occurred 
 							process.nextTick(loop);
 						}
 						else {
@@ -57,17 +59,15 @@ var recParams = {
 							var message = {"default":`{"Message from Piyush"}`, "http":`{"username": "${fetchedText.username}", "text": "${fetchedText.text}", "location": ${JSON.stringify(fetchedText.location)}, "sentiment": ${JSON.stringify(sentiment)}}`};
 							var SNSParams = {
 								Message: JSON.stringify(message), /* required */
-								MessageStructure: 'json',
-								Subject: 'Processed Tweet',
 								TopicArn: 'arn:aws:sns:us-west-2:733784221245:PrcessedTweet'};
 							sns.publish(SNSParams, function(err, data) {
 								if (err) console.log(err, err.stack); // an error occurred
 								else     {
 							    	console.log(data);           // successful response
-							    	console.log("SNS Params: "+SNSParams.Message);
+							    	console.log("SNS Params: "+SNSParams.toString());
 							    	process.nextTick(loop);
-
-							    }
+									}
+							   
 							});
 							
 						}

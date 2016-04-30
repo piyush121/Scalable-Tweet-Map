@@ -255,6 +255,7 @@ var hashTag = '';
 var refreshIntervalId='';
 function myFunction(value) {
 	setMapOnAll(null);
+	document.getElementById("count").innerHTML = "Loading...";
     hashTag = value;
   $.ajax({
     dataType: "text",
@@ -348,7 +349,7 @@ FB.getLoginStatus(function(response) {
   } 
   else {
 	clearInterval(refreshIntervalId);
-	throw new Error("No login info Found.");
+	throw new Error("No login information found.");
 	}
 	AWS.config.region = 'us-east-1'; 
 	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
@@ -406,11 +407,13 @@ FB.getLoginStatus(function(response) {
 				marker.setAnimation(google.maps.Animation.DROP);
 				marker.setMap(map);
 				var count = document.getElementById("count").innerHTML;
-				alert(count);
+				
 				var count = +count + +1;
-                document.getElementById("count").innerHTML =count;
+                		document.getElementById("count").innerHTML =count;
 				}
+				
 				}
+
 				catch(e){
 					console.log(e);
 					};

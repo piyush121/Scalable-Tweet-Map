@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Scalable TweetMap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Loading Bootstrap -->
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Loading Flat UI -->
+    <link href="css/flat-ui.css" rel="stylesheet">
+    <link href="css/map.css" rel="stylesheet">
+    <link href="css/flatui-colorDrop.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="images/favicon.ico">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+      <![endif]-->
+  </head>
+  <body>
+    <aside id="sidebar" class="wet-asphalt">
+        <header>
+            <h3 class="turquoise-text">Scalable TweetMap</h3>
+            
+        </header>
+        
+
+        <ul class="sidebar-options">
+            <li>
+                <h4><b><i>Trending  HashTags</i></b></h4>
+                
+                <select id="dropdown" onChange = "myFunction(value)">
+                    <option  >---select---</option>
+                    <option value="trump" >Donald Trump</option>
+                    <option value="gym" >Gym</option>
+                    <option value="music" >Music</option>
+                    <option value="food" >Food</option>
+                    <option value="ipl" >IPL</option>
+                    <option value="usa" >USA</option>
+                    <option value="life" >Life</option>
+                    <option value="body" >Body</option>
+                </select>
+                
+            </li>
+		<h2><b> Total Hits: <span id ="count" style = "color: red">  0 </h2> </span></b></h2>
+            
+        </ul>
+		
+    </aside>
+    <div id="map">
+      
+    </div>
+    <!-- /#map -->
+
+
+    <!-- Load JS here for greater good =============================-->
+    <script src="js/jquery-1.8.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/flatui-colorDrop.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyC69IK56T2cawEOiwqm0ArqJ81toX5col8&sensor=false"></script>
+    <script>
+       var map = new google.maps.Map( document.getElementById( 'map' ), {
+        zoom: 6,
+        center: new google.maps.LatLng(40.7128, -74.0059),
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+		minZoom: 1
+    });  
+	
+       (function( $, google ) {
+        
+          
+         var image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+         var beachMarker = new google.maps.Marker({
+             position: {lat: 40.7128, lng: -74.0059},
+             map: map,
+             icon: image
+         });
+         $('.btn-group').colorDrop({
+            onChange: function() {
+                changeMapStyles( map );
+            }
+        });
+
+         $('#map').height($(window).height());
+
+         function changeMapStyles( map ) {
+
+            var hueColor = '#e67e22',
+            roadColor = '#d35400',
+            waterColor = '#2980b9',
+            parkColor = '#16a085',
+            landscapeColor = '#bdc3c7';
+
+            var featureOpts = [
+            {
+              stylers: [
+              { hue: hueColor }
+              ]
+          },{
+            elementType: "labels",
+            stylers: [{
+                visibility: "on"
+            }]
+        },{
+            featureType: "road",
+            stylers: [{
+                visibility: "on"
+            }, {
+                color: roadColor
+            }]
+        },{
+            featureType: "water",
+            stylers: [{
+                visibility: "on"
+            }, {
+                color: waterColor
+            }]
+        },
+        {
+            featureType: "poi"
+            ,stylers: [{
+                visibility: "on"
+            }, {
+                color: parkColor
+            }]
+        },
+        {
+            featureType: "landscape",
+            stylers: [{
+                visibility: "on"
+            }, {
+                color: landscapeColor
+            }]
+        }
+        ];  
+
+        map.setOptions({
+            styles: featureOpts
+        });            
+
+    };
+
+    changeMapStyles( map );
+
+})( jQuery, google );
+var markers = [];
+function myFunction(value) {
+	setMapOnAll(null);
+    	document.getElementById("count").innerHTML = "Loading...";
+  $.ajax({
+    dataType: "text",
+    url: 'http://ec2-52-38-143-215.us-west-2.compute.amazonaws.com:3000/'+value,
+    success: function (data) {
+        data = JSON.parse(data);
+			//alert(data[0]._source.location.coordinates);
+			console.log(data.length);
+			var infowindow = new google.maps.InfoWindow();
+			var contentString = '';
+			document.getElementById("count").innerHTML = data.length;
+
+			for( i =0; i < data.length; i++) {
+             try{
+                var latLng = new google.maps.LatLng(data[i]._source.location.coordinates[0],data[i]._source.location.coordinates[1]); 
+				
+                contentString = "<b>Username:</b> "+data[i]._source.username+"<br><b>Tweet: </b>"+data[i]._source.text+"<br><b>Sentiment Score: </b>"+(data[i]._source.sentiment.score*100).toFixed(2)+"% <i>"+data[i]._source.sentiment.type+"</i>";
+				
+			// Creating a marker and putting it on the map
+				var marker = new google.maps.Marker({
+					position: latLng,
+					map: map,
+					clickable: true,
+					content: contentString,
+					title: "Location: "+JSON.stringify(data[i]._source.location.coordinates)
+				});
+				google.maps.event.addListener(marker, 'click', (function (marker, i) {
+					return function () {
+						infowindow.setContent(marker.content);
+						infowindow.open(map, marker);
+					}
+				})(marker, i));
+				
+				
+				markers.push(marker);
+			
+			if(data[i]._source.sentiment.type == "positive") {
+             marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+			 }
+			 else if(data[i]._source.sentiment.type == "neutral") {
+				 marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
+			 }
+			 else if(data[i]._source.sentiment.type == "negative") {
+				 marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+			 }
+		 }
+     catch(e) {
+         console.log("Syntax Error: "+e);
+     }
+ }
+ 
+ 
+}
+});
+
+}
+
+function setMapOnAll(map) {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+  }
+}
+
+</script>
+</body>
+</html>
