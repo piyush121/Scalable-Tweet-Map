@@ -251,10 +251,11 @@
 
 })( jQuery, google );
 var markers = [];
-
+var hashTag = '';
+var refreshIntervalId='';
 function myFunction(value) {
 	setMapOnAll(null);
-    
+    hashTag = value;
   $.ajax({
     dataType: "text",
     url: 'http://ec2-52-38-143-215.us-west-2.compute.amazonaws.com:3000/'+value,
@@ -311,7 +312,7 @@ function myFunction(value) {
 });
 FB.getLoginStatus(function(response) {
   if (response.status === 'connected') {// logged in
-    setInterval(showTweets,1000);
+	refreshIntervalId = setInterval(showTweets,1000);
     console.log('You are now logged in to Facebook.');
   } else {
     alert('Please Login to see LIVE tweets');
@@ -328,7 +329,7 @@ function setMapOnAll(map) {
 
 
 
-var showTweets = function () { //trying to fetch tweets from sqs.
+var showTweets = function() { //trying to fetch tweets from sqs.
 var recParams = {
 	QueueUrl: 'https://sqs.us-west-2.amazonaws.com/733784221245/TweetsFetched', /* required */
 	MaxNumberOfMessages: 1,
@@ -336,8 +337,8 @@ var recParams = {
 	"All"
 	],
 	/* more items */
-	VisibilityTimeout: 120,
-	WaitTimeSeconds: 10
+	VisibilityTimeout: 60,
+	WaitTimeSeconds: 20
 };
 var accessToken ='';
 
@@ -345,8 +346,12 @@ FB.getLoginStatus(function(response) {
   if (response.status === 'connected') {
     accessToken = response.authResponse.accessToken;
   } 
-AWS.config.region = 'us-east-1'; 
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+  else {
+	clearInterval(refreshIntervalId);
+	throw new Error("No login info Found.");
+	}
+	AWS.config.region = 'us-east-1'; 
+	AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: 'us-east-1:0d874084-163a-4689-8c5f-1458b37fbaf2',
       Logins: {
         'graph.facebook.com': accessToken
@@ -359,19 +364,28 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 			if (err) console.log(err, err.stack); // an error occurred
 			else    { 
 			try{
+				//console.log("Received "+JSON.stringify(data));
+
 				fetchedText = JSON.parse(data.Messages[0].Body);
 				fetchedText = JSON.parse(JSON.parse(fetchedText.Message).http);
-				fetchedText = JSON.parse(JSON.stringify(fetchedText.location));
-				console.log("Fetched: "+fetchedText.coordinates);
-				var latLng = new google.maps.LatLng(fetchedText.coordinates[0],fetchedText.coordinates[1]); 
-				 
+				var tweet = String(fetchedText.text);
+				console.log("Fetched: "+fetchedText.text);
+				console.log(tweet.indexOf(hashTag) > -1);
+				var latLng = new google.maps.LatLng(fetchedText.location.coordinates[0],fetchedText.location.coordinates[1]); 
+				
 				// Creating a marker and putting it on the map
+				if(tweet.indexOf(hashTag) > -1 ) 
+				{
+				contentString = "<b>Username:</b> "+fetchedText.username+"<br><b>Tweet: </b>"+fetchedText.text+"<br><b>Sentiment Score: </b>"+(fetchedText.sentiment.score*100).toFixed(2)+"% <i>"+fetchedText.sentiment.type+"</i>";
+				var infowindow = new google.maps.InfoWindow({
+					content: contentString
+				  });
 				var marker = new google.maps.Marker({
 					position: latLng,
 					map: map,
 					clickable: true,
-					content: "In progress",
-					title: "Location: "+fetchedText.coordinates
+					content: contentString,
+					title: "Location: "+fetchedText.location.coordinates
 				});
 				google.maps.event.addListener(marker, 'click', (function (marker) {
 					return function () {
@@ -379,11 +393,23 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 						infowindow.open(map, marker);
 					}
 				})(marker));
-				
-				//marker.setAnimation(google.maps.Animation.DROP);
+				if(fetchedText.sentiment.type == "positive") {
+				 marker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+				 }
+				 else if(fetchedText.sentiment.type == "neutral") {
+					 marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png')
+				 }
+				 else if(fetchedText.sentiment.type == "negative") {
+					 marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+				 }
 				markers.push(marker);
 				marker.setAnimation(google.maps.Animation.DROP);
 				marker.setMap(map);
+				var count = document.getElementById("count").innerHTML;
+				alert(count);
+				var count = +count + +1;
+                document.getElementById("count").innerHTML =count;
+				}
 				}
 				catch(e){
 					console.log(e);
