@@ -17,6 +17,10 @@ System Design :
 
 ![alt tag](http://i.imgur.com/ouIDUJT.png)
 
+ScreenShot:
+
+![alt tag](http://i.imgur.com/IbPK6DB.jpg)
+
 <b>Final version running on :
 
 http://ec2-52-37-143-159.us-west-2.compute.amazonaws.com:3000/
