@@ -21,7 +21,7 @@ System Design :
 
 ScreenShot:
 
-![alt tag](http://i.imgur.com/IbPK6DB.jpg)
+![alt tag](http://i.imgur.com/s4rSXvi.gif)
 
 <b>Final version running on :
 
