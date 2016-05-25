@@ -9,6 +9,8 @@ Technologies used :
 
 -Aamazon SQS, SNS serivces.
 
+-ElasticSearch to store tweets
+
 -Alchemy API for sentiment Analysis.
 
 -NodeJS for backend.
@@ -16,6 +18,10 @@ Technologies used :
 System Design :
 
 ![alt tag](http://i.imgur.com/ouIDUJT.png)
+
+ScreenShot:
+
+![alt tag](http://i.imgur.com/s4rSXvi.gif)
 
 <b>Final version running on :
 
